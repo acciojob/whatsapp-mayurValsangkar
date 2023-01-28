@@ -63,12 +63,27 @@ public class WhatsappRepository {
     }
 
     public int sendMessage(Message message, User sender, Group group) throws Exception {
-        if(!groupUserMap.containsKey(group)){
+
+        int flag = 0;
+        for(Group group1 : groupUserMap.keySet()){
+            if(Objects.equals(group1.getName(), group.getName())){
+                flag = 1;
+            }
+        }
+
+        if(flag==0){
             throw new Exception("Group does not exist");
         }
 
+        flag = 0;
         List<User> userList = groupUserMap.get(group);
-        if(!userList.contains(sender)){
+        for(User user : userList){
+            if(Objects.equals(user.getName(), sender.getName())){
+                flag = 1;
+            }
+        }
+
+        if(flag==0){
             throw new Exception("You are not allowed to send message");
         }
 
@@ -80,16 +95,39 @@ public class WhatsappRepository {
     }
 
     public String changeAdmin(User approver, User user, Group group) throws Exception{
-        if(!groupUserMap.containsKey(group)){
+
+
+        int flag = 0;
+        for(Group group1 : groupUserMap.keySet()){
+            if(Objects.equals(group1.getName(), group.getName())){
+                flag = 1;
+            }
+        }
+
+        if(flag==0){
             throw new Exception("Group does not exist");
         }
 
-        if(!Objects.equals(adminMap.get(group), approver)){
+        flag = 0;
+        for(User user1 : adminMap.values()){
+            if(Objects.equals(user1.getName(), approver.getName())){
+                flag = 1;
+            }
+        }
+
+        if(flag==0){
             throw new Exception("Approver does not have rights");
         }
 
+        flag = 0;
         List<User> userList = groupUserMap.get(group);
-        if(!userList.contains(user)){
+        for(User user1 : userList){
+            if(Objects.equals(user1.getName(), user.getName())){
+                flag = 1;
+            }
+        }
+
+        if(flag==0){
             throw new Exception("User is not a participant");
         }
 
@@ -105,7 +143,7 @@ public class WhatsappRepository {
         for(Group group : groupUserMap.keySet()){
             if(groupUserMap.get(group).contains(user)){
                 userGroup = group;
-                if(Objects.equals(adminMap.get(userGroup), user)){
+                if(Objects.equals(adminMap.get(userGroup).getName(), user.getName())){
                     throw new Exception("Cannot remove admin");
                 }
                 flag = 1;
